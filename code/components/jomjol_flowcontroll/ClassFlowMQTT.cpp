@@ -104,6 +104,10 @@ bool ClassFlowMQTT::ReadParameter(FILE* pfile, string& aktparamgraph)
         {
             this->topicTimeStamp  = zerlegt[1];
         }
+        if ((toUpper(zerlegt[0]) == "TOPICJSON") && (zerlegt.size() > 1))
+        {
+            this->topicJson  = zerlegt[1];
+        }
 
         if ((toUpper(zerlegt[0]) == "CLIENTID") && (zerlegt.size() > 1))
         {
@@ -167,6 +171,15 @@ bool ClassFlowMQTT::doFlow(string zwtime)
 
     if (topicTimeStamp.length() > 0) {
         MQTTPublish(topicTimeStamp, resulttimestamp);
+    }
+
+    if(topicJson.length() > 0) {
+        std::string json="{\"zaehlerstand\":"+result;
+        json += ",\"error\":\""+resulterror;
+        json += "\",\"rate\":"+resultrate;
+        json += ",\"timestamp\":\""+resulttimestamp+"\"}";
+
+        MQTTPublish(topicJson,json);
     }
 
     OldValue = result;
